@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BiSolidMessageSquareAdd } from "react-icons/bi";
 import { RiDeleteBackFill } from "react-icons/ri";
 
@@ -8,8 +8,18 @@ export default function Home() {
   const [note, setNote] = useState('');
   const [data, setData] = useState([]);
 
+  // GET all notes on load
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/api/DataFetch");
+      const result = await res.json();
+      setData(result);
+    }
+    fetchData();
+  }, []);
+
   async function AddNote() {
-    if (note === "") return;
+    // if (note === "") return;
 
     // Backend
     try {
@@ -24,17 +34,44 @@ export default function Home() {
       const result = await res.json();
       console.log(result); // checl
 
+      // update UI
+      setData([...data, result.data]);
+
     } catch (error) {
       console.log("Error:", error); // check
     }
 
-    // update UI
-    setData([...data, note]);
     setNote('');
+
+    // Alert
+    if (note === '') {
+      alert('field cannot be empty');
+    } else {
+      return;
+    }
+  }
+
+  // Delete function
+  async function DeleteNote(id) {
+    try {
+      await fetch("/api/DataFetch", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id })
+      });
+
+      // update UI
+      setData(data.filter((item) => item.id !== id));
+
+    } catch (error) {
+      console.log("Delete Error:", error);
+    }
   }
 
   return (
-    <div className="h-screen bg-gray-100 flex flex-col items-center pt-20 gap-6 text-black">
+    <div className="h-screen bg-gray-100 flex flex-col items-center pt-10 gap-6 text-black">
 
       <div className="flex gap-3">
         <input 
@@ -55,14 +92,13 @@ export default function Home() {
       <div className="flex flex-col gap-3 w-80">
         {data.map((item, index) => (
           <div 
-            key={index} 
-            className="bg-white shadow-md rounded-lg px-4 py-2 text-left"
+            key={item.id} 
+            className="bg-white shadow-md rounded-lg px-4 py-2 text-left flex justify-between items-center"
           >
-            {item}
+            {item.noteMessage}
             <span 
-              onClick={() => {
-                setData(data.filter((_, i) => i !== index));
-              }}
+              onClick={() => DeleteNote(item.id)}
+              className="text-red-500 cursor-pointer"
             >
               <RiDeleteBackFill />
             </span>
