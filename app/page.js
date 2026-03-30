@@ -32,7 +32,7 @@ export default function Home() {
       });
 
       const result = await res.json();
-      console.log(result); // checl
+      console.log(result); // check
 
       // update UI
       setData([...data, result.data]);
@@ -75,7 +75,7 @@ export default function Home() {
 
       <div className="flex gap-3">
         <input 
-          placeholder="Enter your note..."
+          placeholder="Enter your task..."
           className="px-5 py-2 rounded-full border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
           value={note}
           onChange={(e) => setNote(e.target.value)}
