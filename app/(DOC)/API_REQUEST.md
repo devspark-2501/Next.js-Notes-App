@@ -19,3 +19,16 @@ async function DeleteNote(id) {
         setData(data.filter(item) => item.id !== id);
     }
 }
+
+
+export async function DELETE(request) {
+    await connectDB();
+    
+    const body = await request();
+    
+    await Note,findByIdAndDelete(body.id);
+
+    return NextResponse.json({
+        message: "Note Deleted
+    });
+}

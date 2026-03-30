@@ -38,7 +38,7 @@ export async function DELETE(request) {
 
   NoteData = NoteData.filter((item) => item.id !== id);
 
-  console.log("Note Deleted");
+  console.log("Note Deleted"); // check
 
   return NextResponse.json({
     message: "Note Deleted"

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function NoteApp() {
     const [input, setInput] = useState('');
@@ -33,46 +34,79 @@ export default function NoteApp() {
             });
 
             const result = await res.json();
-            console.log(result) // check
+            console.log(result)
 
             //update UI
-            setData([...data, result]);
+            setData([result.data, ...data]); // new note on top
             
         } catch(error) {
-            console.log("Error:", error); // check
+            console.log("Error:", error);
         }
 
         setInput('');
     }
 
-    return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10 gap-8">
+    async function DeleteNote(id) {
+        try {
+            await fetch("/api/NoteData", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id })
+            });
 
-            <div className="flex gap-3 w-full max-w-xl">
+            // update UI
+            setData(data.filter((item) => item._id !== id));
+
+        } catch (error) {
+            console.log("Delete Error:", error);
+        }
+    }
+
+    return (
+        <div className="min-h-screen bg-neutral-100 flex flex-col items-center py-12 gap-10">
+
+            {/* Input Section */}
+            <div className="flex gap-3 w-full max-w-2xl">
                 <input 
-                    placeholder="Write something..."
+                    placeholder="Write your thoughts..."
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="flex-1 px-4 py-2 text-lg rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    className="flex-1 px-6 py-4 text-xl rounded-2xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-black text-black"
                 />
 
                 <button
                     onClick={CreateNote}
-                    className="bg-yellow-400 hover:bg-yellow-500 px-6 py-2 rounded-xl text-lg font-semibold shadow-md transition"
+                    className="bg-black text-white px-6 py-4 rounded-2xl text-lg font-semibold shadow-md hover:scale-105 active:scale-95 transition"
                 >
                     Add
                 </button>
             </div>
 
-            <div className="w-full max-w-xl flex flex-col gap-5">
+            {/* Notes Section */}
+            <div className="w-full max-w-2xl flex flex-col gap-6 text-black">
+
                 {data.map((item) => (
                     <div 
                         key={item._id}
-                        className="bg-white p-6 rounded-2xl shadow-md text-xl leading-relaxed"
+                        className="bg-white p-6 rounded-3xl shadow-lg text-2xl leading-relaxed flex justify-between items-start group"
                     >
-                        {item.noteMessage}
+                        {/* Note Text */}
+                        <p className="flex-1 pr-4 break-words">
+                            {item.noteMessage}
+                        </p>
+
+                        {/* Delete Button */}
+                        <button
+                            onClick={() => DeleteNote(item._id)}
+                            className="opacity-0 group-hover:opacity-100 transition text-red-500 hover:scale-110"
+                        >
+                            <RiDeleteBin6Line size={24} />
+                        </button>
                     </div>
                 ))}
+
             </div>
 
         </div>

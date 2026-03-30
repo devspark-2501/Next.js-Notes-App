@@ -1,13 +1,16 @@
 import mongoose from "mongoose";
 
+// connect db via string
 export async function connectDB() {
-  await mongoose.connect(process.env.MONGO_URI);
+    if (mongoose.connection.readyState >= 1) return;
+
+    await mongoose.connect(process.env.MONGO_URI);
 }
 
-// Schema + Model
+// schema
 const NoteSchema = new mongoose.Schema({
-  noteMessage: String,
+    noteMessage: String,
 });
 
-export const Note =
-  mongoose.models.Note || mongoose.model("Note", NoteSchema);
+// model
+export const Note = mongoose.models.Note || mongoose.model("Note", NoteSchema);
