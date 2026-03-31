@@ -1,6 +1,7 @@
 import "./globals.css";
 
 import NavBar from "./Components/NavBar";
+import SessionWrapper from "./Components/SessionWrapper";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,8 +12,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-gray-100">
-        <NavBar />
-        {children}
+        <SessionWrapper>
+          <NavBar />
+          {children}
+        </SessionWrapper>
       </body>
     </html>
   );
